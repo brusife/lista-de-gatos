@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Gatos</title>
+    <title>CAT a list</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
 </head>
 <body>
-    <div>
-        <h1><img src="icons8-github-100.png" alt="Ícone Gatos, ícone do github"></h1>
-        <h1>Lista de Gatos</h1>
-        <input type="text" id="novoGato" placeholder="Nome do gato" autocomplete="off">
-        <p><button onclick="adicionarGato()">+ Adicionar</button></p>
+    <div class="main">
+        <h1><img src="logo.png" alt="logo">CAT a list</h1>
+        <h3>Crie e gerencie uma lista de gatos!</h3>
+        <div id="criargato">
+            <input type="text" id="novoGato" placeholder="escreva o nome" autocomplete="off">
+            <button onclick="adicionarGato()" class="submit"><img src="adicionar.png" alt=""></button>
+        </div>
         <h2 class="invisivel" id="titulolista">Lista de Gatos</h2>
         <div id="lista-gatos"></div>
+        <div id="apaga-todos" class="invisivel"><button onclick="apagarTodos()">Apagar Lista</button></div>
     </div>
     <script src="script.js"></script>
 </body>
