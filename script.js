@@ -3,41 +3,55 @@ let lista = document.getElementById("lista-gatos");
 let listaTitulo = document.getElementById("titulolista");
 let apagaTodos = document.getElementById("apaga-todos");
 
-function adicionarGato() {
-  apagaTodos.classList.remove("invisivel")
-  listaTitulo.classList.remove("invisivel")
+mostrarGatos();
+
+async function adicionarGato() {
   let novoGato = document.getElementById("novoGato").value;
   if (novoGato.trim() !== "") {
-    gatos.push(novoGato);
+    const response = await fetch("http://localhost:3000/adicionar-gato", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome: novoGato }),
+    });
+    const gatoAdicionado = await response.json();
+    gatos.push(gatoAdicionado);
     mostrarGatos();
     document.getElementById("novoGato").value = "";
   }
 }
 
-function mostrarGatos() {
-  lista.innerHTML = "";
-  for (i = 0; i < gatos.length; i++) {
-    let linhaGato = document.createElement("p");
-    linhaGato.innerHTML = `
-     <img src="icone.png" alt="">
-     <span class="nome" id="gato-${i}">${gatos[i]}</span> 
-     <button class= 'btnlista editar' onclick="editarGato(${i})" id="editBtn-${i}">Editar
-     </button>
-     <button class= 'btnlista excluir' onclick="removerGato(${i})">
-     <img src="lixo.png" alt="">
-     </button> `;
-    lista.appendChild(linhaGato);
+async function mostrarGatos() {
+  try {
+    const response = await fetch("http://localhost:3000/listar-gatos");
+    if (!response.ok) {
+      throw new Error("Erro ao carregar a lista de gatos");
+    }
+    const gatos = await response.json();
+    lista.innerHTML = "";
+    gatos.forEach((gato) => {
+      const linhaGato = document.createElement("p");
+      linhaGato.innerHTML = `
+      <img src="icone.png" alt="">
+                <span class="nome" id="gato-${gato.id}">${gato.nome}</span>
+                <button class='btnlista editar' onclick="editarGato(${gato.id})">Editar</button>
+                <button class='btnlista excluir' onclick="removerGato(${gato.id})">
+                    <img src="lixo.png" alt="">
+                </button>`;
+      lista.appendChild(linhaGato);
+    });
+  } catch (error) {
+    console.error(error);
   }
 }
 
-function removerGato(index) {
-  if (confirm(`Deseja apagar ${gatos[index]}?`)) {
+async function removerGato(id) {
+  if (confirm(`Deseja apagar ?`)) {
+    const response = await fetch(`http://localhost:3000/excluir-gato/${id}`, {
+      method: "DELETE",
+    });
+    const index = gatos.findIndex(gato => gato.id === id)
     gatos.splice(index, 1);
-    mostrarGatos(); 
-    if (gatos.length === 0) {
-      listaTitulo.classList.add("invisivel");
-      apagaTodos.classList.add("invisivel");
-    }
+    mostrarGatos();
   }
 }
 
@@ -45,7 +59,7 @@ function editarGato(index) {
   let spanGato = document.getElementById(`gato-${index}`);
   let input = document.createElement("input");
   let btnEdit = document.getElementById(`editBtn-${index}`);
-  btnEdit.classList.add("invisivel")
+  btnEdit.classList.add("invisivel");
   input.type = "text";
   input.setAttribute("id", "alteraGato");
   input.autocomplete = "off";
@@ -55,21 +69,12 @@ function editarGato(index) {
   botaoSalvar.textContent = "Alterar";
   botaoSalvar.classList.add("confirmar");
   botaoSalvar.onclick = function () {
-    if(confirm("Deseja alterar o nome do gato?")){
+    if (confirm("Deseja alterar o nome do gato?")) {
       gatos[index] = input.value;
       mostrarGatos();
     }
-  }
+  };
   input.insertAdjacentElement("afterend", botaoSalvar);
-}
-
-function apagarTodos() {
-  if(confirm("Isso vai excluir toda a lista, tem certeza?")){
-    gatos.length = 0;
-    mostrarGatos();
-    listaTitulo.classList.add("invisivel");
-    apagaTodos.classList.add("invisivel");
-  }
 }
 
 document
